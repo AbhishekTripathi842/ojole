@@ -1,0 +1,71 @@
+import React, { useEffect, useRef } from "react";
+import Head from "next/head";
+import Router, { useRouter } from "next/router";
+import Link from "next/link";
+import Header from "../../components/common/header";
+import Meta from "../../components/common/meta";
+import Image from "next/image";
+import { useState } from "react";
+import LoginModal from "../../components/common/login-modal";
+import FooterComponent from "../../components/common/footer";
+import AuthenticatedRoute from "../../components/authenticateRoute";
+import { LOGIN_MODAL_OPEN, REGISTER_MODAL_OPEN } from "../../store/type";
+import { connect } from "react-redux";
+
+const AccountActivationSuccessPage = ({dispatch,loginResponse}) => {
+  const [loginModal, setLoginModal] = useState(false);
+  const [token, setToken] = useState("");
+  const router = useRouter();
+
+  useEffect(()=>{
+    if(loginResponse && loginResponse.success){
+      router.push("/");
+    }
+  },[loginResponse]) 
+
+
+  return (
+    <main>
+      <LoginModal
+        showModal={loginModal}
+        handleClose={() => setLoginModal(false)}
+      />
+
+      <Head>
+        <title>Account activation</title>
+        <Meta />
+      </Head>
+      <Header tokenData={(data)=>setToken(data)} />
+
+      <div className="activate-message-page-wrapper">
+        <div className="activate-message-section">
+          <h1>Congratulations!</h1>
+          <p>You have successfully activated your account.</p>
+          <button onClick={() =>
+                      dispatch({
+                        type: LOGIN_MODAL_OPEN,
+                        payload: { email: "" },
+                      })
+                    }>
+            Login to my account
+          </button>
+          <img src="/assets/image/hand-with-heart.svg" />
+        </div>
+        <div className="guarantee-section">
+          <h1>Full 30 Day Money Back Guarantee</h1>
+          <p>
+            We offer a full 30 day money back guarantee <br />- so try a paid
+            membership now for unlimited sending of all our cards!{" "}
+          </p>
+        </div>
+      </div>
+      <FooterComponent />
+    </main>
+  );
+};
+
+//export default AccountActivationSuccessPage;
+
+export default connect((state) => ({
+  loginResponse:state.loginResponse,
+}))(AccountActivationSuccessPage);
